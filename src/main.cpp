@@ -8,17 +8,7 @@ int main(int argc, const char* argv[])
     const char* binFilePath = argv[1];
     const char* outFilePath = argv[2];
 
-    TextResult textResult = Disassemble(binFilePath);
+    ErrorCode disAsmError = Disassemble(binFilePath, outFilePath);
 
-    if (!textResult.error)
-    {
-        Text text = textResult.value;
-        FILE* outFile = fopen(outFilePath, "w");
-        fwrite(text.text, 1, text.size, outFile);
-        fclose(outFile);
-    }
-
-    TextDestructor(&textResult.value);
-
-    return textResult.error;
+    return disAsmError;
 }
