@@ -33,6 +33,7 @@ enum ErrorCode
     ERROR_INDEX_OUT_OF_BOUNDS, ERROR_NO_MEMORY, ERROR_NO_COMPARATOR, ERROR_BAD_SIZE,
     ERROR_BAD_VALUE, ERROR_DEAD_CANARY, ERROR_BAD_HASH, ERROR_ZERO_DIVISION,
     ERROR_SYNTAX, ERROR_WRONG_LABEL_SIZE, ERROR_TOO_MANY_LABELS,
+    ERROR_NOT_FOUND, ERROR_BAD_FIELDS,
 };
 
 static const char* ERROR_CODE_NAMES[] =
@@ -41,21 +42,22 @@ static const char* ERROR_CODE_NAMES[] =
     "ERROR_INDEX_OUT_OF_BOUNDS", "ERROR_NO_MEMORY", "ERROR_NO_COMPARATOR", "ERROR_BAD_SIZE",
     "ERROR_BAD_VALUE", "ERROR_DEAD_CANARY", "ERROR_BAD_HASH", "ERROR_ZERO_DIVISION",
     "ERROR_SYNTAX", "ERROR_WRONG_LABEL_SIZE", "ERROR_TOO_MANY_LABELS",
+    "ERROR_NOT_FOUND", "ERROR_BAD_FIELDS",
 };
 
-#define RETURN_ERROR(error)                                                                                         \
-do                                                                                                                  \
-{                                                                                                                   \
-    __typeof__(error) _error = error;                                                                               \
-    if (_error)                                                                                                     \
-        return _error;                                                                                              \
+#define RETURN_ERROR(error)                                                                                                 \
+do                                                                                                                          \
+{                                                                                                                           \
+    __typeof__(error) _error = error;                                                                                       \
+    if (_error)                                                                                                             \
+        return _error;                                                                                                      \
 } while (0)
 
-#define RETURN_ERROR_RESULT(result, poison)                                                                         \
-do                                                                                                                  \
-{                                                                                                                   \
-    if (result.error)                                                                                               \
-        return {poison, result.error};                                                                              \
+#define RETURN_ERROR_RESULT(result, poison)                                                                                 \
+do                                                                                                                          \
+{                                                                                                                           \
+    if (result.error)                                                                                                       \
+        return {poison, result.error};                                                                                      \
 } while (0)
 
 /**
@@ -67,14 +69,14 @@ do                                                                              
  *
  * @note If there is nothing to perform pass nothing.
  */
-#define MyAssertHard(statement, error, ...)                                                                         \
-if (!(statement))                                                                                                   \
-do {                                                                                                                \
-    SetConsoleColor(stderr, COLOR_RED);                                                                             \
-    fprintf(stderr, "%s in %s in %s in line: %d\n", #error, __FILE__, __PRETTY_FUNCTION__, __LINE__);               \
-    SetConsoleColor(stderr, COLOR_WHITE);                                                                           \
-    __VA_ARGS__;                                                                                                    \
-    exit(error);                                                                                                    \
+#define MyAssertHard(statement, error, ...)                                                                                 \
+if (!(statement))                                                                                                           \
+do {                                                                                                                        \
+    SetConsoleColor(stderr, COLOR_RED);                                                                                     \
+    fprintf(stderr, "%s in %s in %s in line: %d\n", ERROR_CODE_NAMES[error], __FILE__, __PRETTY_FUNCTION__, __LINE__);      \
+    SetConsoleColor(stderr, COLOR_WHITE);                                                                                   \
+    __VA_ARGS__;                                                                                                            \
+    exit(error);                                                                                                            \
 } while(0);
 
 /**
@@ -95,15 +97,15 @@ do {                                                                            
  * 
  * @return ErrorCode
  */
-#define MyAssertSoft(statement, error, ...)                                                                         \
-if (!(statement))                                                                                                   \
-do {                                                                                                                \
-    SetConsoleColor(stderr, COLOR_RED);                                                                             \
-    fprintf(stderr, "%s in %s in %s in line: %d\n", #error, __FILE__, __PRETTY_FUNCTION__, __LINE__);               \
-    SetConsoleColor(stderr, COLOR_WHITE);                                                                           \
-    __VA_ARGS__;                                                                                                    \
-    return error;                                                                                                   \
-} while(0);                                                                                                         \
+#define MyAssertSoft(statement, error, ...)                                                                                 \
+if (!(statement))                                                                                                           \
+do {                                                                                                                        \
+    SetConsoleColor(stderr, COLOR_RED);                                                                                     \
+    fprintf(stderr, "%s in %s in %s in line: %d\n", ERROR_CODE_NAMES[error], __FILE__, __PRETTY_FUNCTION__, __LINE__);      \
+    SetConsoleColor(stderr, COLOR_WHITE);                                                                                   \
+    __VA_ARGS__;                                                                                                            \
+    return error;                                                                                                           \
+} while(0);                                                                                                                 \
 
 /**
  * @brief Soft assert which tells the file, function and line where the error occurred.
@@ -117,15 +119,15 @@ do {                                                                            
  * 
  * @return Result Struct.
  */
-#define MyAssertSoftResult(statement, value, error, ...)                                                            \
-if (!(statement))                                                                                                   \
-do {                                                                                                                \
-    SetConsoleColor(stderr, COLOR_RED);                                                                             \
-    fprintf(stderr, "%s in %s in %s in line: %d\n", #error, __FILE__, __PRETTY_FUNCTION__, __LINE__);               \
-    SetConsoleColor(stderr, COLOR_WHITE);                                                                           \
-    __VA_ARGS__;                                                                                                    \
-    return {value, error};                                                                                          \
-} while(0);                                                                                                         \
+#define MyAssertSoftResult(statement, value, error, ...)                                                                    \
+if (!(statement))                                                                                                           \
+do {                                                                                                                        \
+    SetConsoleColor(stderr, COLOR_RED);                                                                                     \
+    fprintf(stderr, "%s in %s in %s in line: %d\n", ERROR_CODE_NAMES[error], __FILE__, __PRETTY_FUNCTION__, __LINE__);      \
+    SetConsoleColor(stderr, COLOR_WHITE);                                                                                   \
+    __VA_ARGS__;                                                                                                            \
+    return {value, error};                                                                                                  \
+} while(0);                                                                                                                 \
 
 /**
  * @brief Struct to contain where some variable was created.
