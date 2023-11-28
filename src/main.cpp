@@ -2,8 +2,12 @@
 
 int main(int argc, const char* argv[])
 {
-    argv[1] = "factorial";
-    argv[2] = "out.txt";
+    if (argc != 3)
+    {
+        fprintf(stderr, "Please, give input and output files.\n");
+
+        return ERROR_BAD_FILE;
+    }
 
     const char* binFilePath = argv[1];
     const char* outFilePath = argv[2];

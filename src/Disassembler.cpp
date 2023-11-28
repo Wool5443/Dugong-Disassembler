@@ -29,9 +29,8 @@ ErrorCode Disassemble(const char* binFilePath, const char* outFilePath)
             #define DEF_COMMAND(name, num, ...)                                                         \
             case num:                                                                                   \
             {                                                                                           \
-                fprintf(outFile, "[%08ld]%4s%-4s%4s", codePosition - 1, "", #name, "");                 \
+                fprintf(outFile, "[%08lu]%4s%-4s%4s", codePosition - 1, "", #name, "");                 \
                 double arg = 0;                                                                         \
-                byte   reg = 0;                                                                         \
                 if (command & (ImmediateNumberArg << BITS_FOR_COMMAND))                                 \
                 {                                                                                       \
                     memcpy(&arg, codeArray + codePosition, sizeof(double));                             \
@@ -40,9 +39,9 @@ ErrorCode Disassemble(const char* binFilePath, const char* outFilePath)
                 }                                                                                       \
                 if (command & (RegisterArg << BITS_FOR_COMMAND))                                        \
                 {                                                                                       \
-                    reg = codeArray[codePosition];                                                      \
+                    byte reg = codeArray[codePosition];                                                 \
                     codePosition++;                                                                     \
-                    fprintf(outFile, "%-4s%4s", REG_NAMES[regNum], "");                                 \
+                    fprintf(outFile, "%-4s%4s", REG_NAMES[reg], "");                                    \
                 }                                                                                       \
                 fprintf(outFile, "\n");                                                                 \
                 break;                                                                                  \
